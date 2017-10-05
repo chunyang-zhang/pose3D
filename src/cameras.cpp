@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <string.h>
+#include <fstream>
+#include <math.h>
+#include <stdlib.h>
+#include "cameras.h"
+#include "skeleton.h"
+#include "motion.h"
+#include "vector.h"
