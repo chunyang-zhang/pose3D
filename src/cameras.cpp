@@ -92,8 +92,7 @@ void Cameras::drawCam(int camId){
     m_fy = mCam_cur.K(1,1);
     m_cx = mCam_cur.K(0,2);
     m_cy = mCam_cur.K(1,2);
-
-
+    
 
     glColor3f(1,0,0);
     glLineWidth(2.0);
