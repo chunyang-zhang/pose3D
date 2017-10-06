@@ -237,6 +237,37 @@ void DisplaySkeleton::DrawBone(Bone *pBone, int skelNum)
   // This step corresponds to doing: M_k+1 = ModelviewMatrix += T_k+1
   glTranslatef(float(tx), float(ty), float(tz));
 }
+void DisplaySkeleton::TraverseBonePos(Bone *ptr,int skelNum){
+
+  if(ptr==NULL)
+      return;
+  glPushMatrix();
+  GLint lightingStatus;
+  glGetIntegerv(GL_LIGHTING, &lightingStatus);
+  glDisable(GL_LIGHTING);
+  glColor3f(1,0,0);
+  glLineWidth(2.0);
+  
+  
+  glBegin(GL_LINES);
+  if(ptr->father!=NULL){
+    glVertex3f(ptr->jointPos(0),ptr->jointPos(1),ptr->jointPos(2));
+    glVertex3f(ptr->father->jointPos(0),ptr->father->jointPos(1),ptr->father->jointPos(2));
+  }
+  
+  glEnd();   
+  if (lightingStatus)
+  glEnable(GL_LIGHTING);
+  glPopMatrix(); 
+
+  
+  TraverseBonePos(ptr->bros,skelNum);
+  TraverseBonePos(ptr->child,skelNum);
+
+
+}
+
+
 
 void DisplaySkeleton::SetShadowingModelviewMatrix(double ground[4], double light[4])
 {
@@ -308,9 +339,11 @@ void DisplaySkeleton::Render(RenderMode renderMode_)
     glRotatef(float(rotationAngle[0]), 1.0f, 0.0f, 0.0f);
     glRotatef(float(rotationAngle[1]), 0.0f, 1.0f, 0.0f);
     glRotatef(float(rotationAngle[2]), 0.0f, 0.0f, 1.0f);
+    Traverse(m_pSkeleton[i]->getRoot(), i);  
+    glPopMatrix();
 
-    Traverse(m_pSkeleton[i]->getRoot(), i);
-
+    glPushMatrix();
+    TraverseBonePos(m_pSkeleton[i]->getRoot(), i);       
     glPopMatrix();
   }
   glPopMatrix();

@@ -1,6 +1,8 @@
 #include"cameras.h"
 #include <FL/gl.h>
 #include <FL/glut.H>
+#include"skeleton.h"
+
 
 Cameras::Cameras(){
     poseId = 0;
@@ -122,5 +124,12 @@ void Cameras::drawCam(int camId){
     if (lightingStatus)
     glEnable(GL_LIGHTING);
     glPopMatrix();
+}
+void Cameras::RenderSkeletonToCam(Skeleton *m_p,int camId){
+    if(!allCams.size())
+        return;    
+    //perspective 
+    
+    
 
 }

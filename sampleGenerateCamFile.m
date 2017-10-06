@@ -5,8 +5,8 @@ y = 1.0;
 
 %notice the axis
 
-sz = 0.2;
-cR = 5;
+sz = 0.4;
+cR = 4;
 cw = 640;
 ch = 480;
 fx = 700;
@@ -23,7 +23,7 @@ fMat = zeros(nFrames,16);
 fprintf(fileId,':camera\n');
 fprintf(fileId,'%f %f %f %f %f %f %f\n',cw,ch,fx,fy,cx,cy,sz);
 for i=1:1:2086
-    crotMat = eul2rotm([0,-yawP(i)-pi-pi/2,0],'ZYX');
+    crotMat = eul2rotm([0,-yawP(i)-pi+pi/2,0],'ZYX');
     cvec = [ cR*cos(yawP(i)) y cR*sin(yawP(i))];
     callMat = [crotMat cvec';0 0 0 1];
     callVec = reshape(callMat,[16,1]);

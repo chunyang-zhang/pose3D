@@ -31,12 +31,14 @@ struct Bone
   int idx;
   std::string name;
 
-
-
+  
   // Bones main pose
   double dir[3]; // Unit vector describes the direction from local origin to
   // the origin of the child bone
   // Notice: stored in local coordinate system of the bone
+
+  Eigen::Vector3d jointPos;
+
 
   double length; // Bone length
 
@@ -109,7 +111,7 @@ public:
 
   //Set the skeleton's pose based on the given posture
   void setPosture(Posture posture);
-
+  void calGlobalBonePos(Bone *m_bone,Eigen::Matrix3d rot2w); 
   //Initial posture Root at (0,0,0)
   //All bone rotations are set to 0
   void setBasePosture();
@@ -154,6 +156,7 @@ protected:
 
   void RotateBoneDirToLocalCoordSystem();
   void ComputeBoneRotationToParentCoordSystem();
+
   void PrintSkeletonStructure(Bone * root,int indent=0);
   void set_bone_shape(Bone *bone);
   void compute_rotation_parent_child(Bone *parent, Bone *child);

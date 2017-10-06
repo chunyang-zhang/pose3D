@@ -347,10 +347,8 @@ void Skeleton::RotateBoneDirToLocalCoordSystem()
       m_BoneDirHomo(j) = m_pBoneList[i].dir[j];
     }
     Eigen::Matrix3d rotMat;
-    rotMat = Eigen::AngleAxisd((-m_pBoneList[i].axis_x) * M_PI / 180, Eigen::Vector3d::UnitX()) 
-           * Eigen::AngleAxisd((-m_pBoneList[i].axis_y) * M_PI / 180, Eigen::Vector3d::UnitY())
-           * Eigen::AngleAxisd((-m_pBoneList[i].axis_z) * M_PI / 180, Eigen::Vector3d::UnitZ());
-    m_BoneDirHomo = rotMat*m_BoneDirHomo;           
+    rotMat = Eigen::AngleAxisd((-m_pBoneList[i].axis_x) * M_PI / 180, Eigen::Vector3d::UnitX()) * Eigen::AngleAxisd((-m_pBoneList[i].axis_y) * M_PI / 180, Eigen::Vector3d::UnitY()) * Eigen::AngleAxisd((-m_pBoneList[i].axis_z) * M_PI / 180, Eigen::Vector3d::UnitZ());
+    m_BoneDirHomo = rotMat * m_BoneDirHomo;
     for (int j = 0; j < 3; j++)
     {
       m_pBoneList[i].dir[j] = m_BoneDirHomo(j);
@@ -374,6 +372,9 @@ void Skeleton::setBasePosture()
     m_pBoneList[i].rx = m_pBoneList[i].ry = m_pBoneList[i].rz = 0.0;
     m_pBoneList[i].tx = m_pBoneList[i].ty = m_pBoneList[i].tz = 0.0;
   }
+  Eigen::Matrix3d iMax;
+  iMax.setIdentity();
+  calGlobalBonePos(getRoot(), iMax);
 }
 
 void Skeleton::enableAllRotationalDOFs()
@@ -445,6 +446,9 @@ void Skeleton::setPosture(Posture posture)
     if (m_pBoneList[j].doftl)
       m_pBoneList[j].tl = posture.bone_length[j];
   }
+  Eigen::Matrix3d iMax;
+  iMax.setIdentity();
+  calGlobalBonePos(getRoot(), iMax);
 }
 
 //Set the aspect ratio of each bone
@@ -500,7 +504,7 @@ Skeleton::Skeleton(char *asf_filename, double scale)
   m_pBoneList[0].axis_y = 0.;
   m_pBoneList[0].axis_z = 0.;
   m_pBoneList[0].length = 0.05;
-  
+
   for (int i = 0; i < MAX_DOFS - 1; i++)
   {
     m_pBoneList[0].dofmask[i] = 1;
@@ -570,4 +574,54 @@ void Skeleton::PrintSkeletonStructure(Bone *bone, int indent)
     PrintSkeletonStructure(bone->child, indent + 4);
     PrintSkeletonStructure(bone->bros, indent);
   }
+}
+
+void Skeleton::calGlobalBonePos(Bone *m_bone, Eigen::Matrix3d f2w)
+{
+  if (m_bone == NULL)
+    return;
+
+  calGlobalBonePos(m_bone->bros, f2w);
+
+  Eigen::Vector3d jointPoseInLocal = Eigen::Map<Eigen::Vector3d>(m_bone->dir)* m_bone->length;
+
+  double crz = 0.0;
+  double cry = 0.0;
+  double crx = 0.0;
+
+  if (m_bone->dofrz)
+    crz = m_bone->rz;
+  if (m_bone->dofry)
+    cry = m_bone->ry;
+  if (m_bone->dofrx)
+    crx = m_bone->rx;
+
+  Eigen::Matrix3d c2a;
+  c2a = Eigen::AngleAxisd(crz * M_PI / 180, Eigen::Vector3d::UnitZ()) 
+    * Eigen::AngleAxisd(cry * M_PI / 180, Eigen::Vector3d::UnitY())
+    * Eigen::AngleAxisd(crx * M_PI / 180, Eigen::Vector3d::UnitX());
+  
+  Eigen::Matrix3d a2f = m_bone->rot2parent.topLeftCorner(3, 3);
+  Eigen::Matrix3d c2w = c2a * a2f * f2w;
+
+
+
+  
+  
+
+
+  Eigen::Vector3d fatherPos; 
+  if (m_bone->idx == 0){
+    fatherPos = Eigen::Map<Eigen::Vector3d>(m_RootPos)+Eigen::Vector3d(2,0,0); 
+  }
+  else{
+    fatherPos = (m_bone->father)->jointPos;
+  } 
+  
+  
+
+  m_bone->jointPos = f2w*a2f*c2a*jointPoseInLocal + fatherPos;                
+  
+  
+  calGlobalBonePos(m_bone->child, f2w*a2f*c2a);    
 }

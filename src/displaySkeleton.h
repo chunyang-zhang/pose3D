@@ -57,6 +57,8 @@ protected:
   void DrawBone(Bone *ptr, int skelNum);
   // Draw the skeleton hierarchy
   void Traverse(Bone *ptr, int skelNum);
+  //
+  void TraverseBonePos(Bone *ptr,int skelNum);  
   // Model matrix for the shadow
   void SetShadowingModelviewMatrix(double ground[4], double light[4]);
   void DrawSpotJointAxis(void);

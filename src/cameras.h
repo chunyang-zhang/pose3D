@@ -24,7 +24,7 @@ Revision 3 - Jernej Barbic and Yili Zhao (USC), Feb, 2012
 #include<fstream>
 #include<string>
 #include<sstream>
-
+#include"skeleton.h"
 
 
 
@@ -45,6 +45,7 @@ public:
   ~Cameras();  
   int loadNewCameraFromFile(char *filename);
   void drawCam(int camId);
+  void RenderSkeletonToCam(Skeleton *m_pSkeleton,int camId=0);
   void setPoseId(int pId_){poseId = pId_;}  
   void Reset();
 
