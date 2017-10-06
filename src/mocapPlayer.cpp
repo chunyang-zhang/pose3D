@@ -27,12 +27,14 @@ Revision 3 - Jernej Barbic and Yili Zhao (USC), Feb, 2012
 #include "pic.h"   
 
 #include "transform.h"  // utility functions for vector and matrix transformation  
-#include "displaySkeleton.h"   
+#include "displaySkeleton.h" 
+#include "cameras.h"
 #include "performanceCounter.h"
 
 enum SwitchStatus {OFF, ON};
 
-DisplaySkeleton displayer;		
+DisplaySkeleton displayer;
+Cameras camDisplayer;
 
 Skeleton *pSkeleton = NULL;	// Skeleton info as read from ASF file
 Motion *pMotion = NULL;     // Motion information as read from AMC file
@@ -236,6 +238,7 @@ void Redisplay()
     glEnable(GL_LIGHTING);
     glDisable(GL_FOG);
     displayer.Render(DisplaySkeleton::BONES_AND_LOCAL_FRAMES);
+    camDisplayer.drawCam(0);
   }
 
   glPopMatrix(); // restore current transformation matrix
@@ -267,6 +270,7 @@ void resetScene_callback(Fl_Button *button, void *)
   lastSkeleton = -1;
   lastMotion = -1;
   displayer.Reset();
+  camDisplayer.Reset();
   maxFrames = 0;
   glwindow->redraw();
   framesIncrementDoublePrecision = 1.0;
@@ -366,9 +370,10 @@ void load_callback(Fl_Button *button, void *)
     } // if (lastSkeleton > lastMotion)
   }
   if(button == loadCamera_button){
-    char *filename = fl_file_chooser("Select filename","*.txt","");
+    char *filename = fl_file_chooser("Select filename","*.cam","");
     if(filename!=NULL){
       printf("Get Camera file %s\n",filename);
+      camDisplayer.loadNewCameraFromFile(filename);      
     }
   }
   glwindow->redraw();
@@ -426,11 +431,13 @@ set the skeleton to the last frame of the motion.
 */
 void SetSkeletonsToSpecifiedFrame(int frameIndex)
 {
+
   if (frameIndex < 0)
   {
     printf("Error in SetSkeletonsToSpecifiedFrame: frameIndex %d is illegal.\n", frameIndex);
     exit(0);
   }
+  camDisplayer.setPoseId(frameIndex);
   for (int skeletonIndex = 0; skeletonIndex < displayer.GetNumSkeletons(); skeletonIndex++)
     if (displayer.GetSkeletonMotion(skeletonIndex) != NULL)
     {

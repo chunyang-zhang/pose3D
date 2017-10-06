@@ -17,43 +17,40 @@ Revision 3 - Jernej Barbic and Yili Zhao (USC), Feb, 2012
 #ifndef _CAMERAS_H_
 #define _CAMERAS_H_
 
-#include<Eigen/Core>
-#include<Eigen/Dense>
+#include <FL/glu.h>
+#include"types.h"
+#include<iostream>
+#include<vector>
+#include<fstream>
+#include<string>
+#include<sstream>
 
 
 
 
-
-class pinholeCamera{
-public:
-    pinholeCamera();
-    ~pinholeCamera();
-
-private:
-    //instrint model:
-    float w;
-    float h;
-    float fx,fy,cx,cy;
-    float sz;
-    //trajectories:    
+struct PinholeCamera{
+  int poseId;
+  double w;
+  double h;
+  Eigen::Matrix3d K;
+  double sz;
+  std::vector<Eigen::Matrix4d> pos;    
 };
-
 
 class Cameras 
 {
   //function members
 public:    
-  Cameras(char *amc_filename, double scale, Skeleton * pSkeleton);
+  Cameras();
+  ~Cameras();  
+  int loadNewCameraFromFile(char *filename);
+  void drawCam(int camId);
+  void setPoseId(int pId_){poseId = pId_;}  
+  void Reset();
 
-  
-  
-
-  ~Cameras();
-
-
-protected:
-  pinholeCamera * allCams;
-  int readCameraFile(char* name, double scale);
+private:  
+  std::vector<PinholeCamera> allCams;  
+  int poseId;
 };
 
 #endif

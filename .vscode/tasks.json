@@ -4,9 +4,13 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "echo",
+            "taskName": "Build",
             "type": "shell",
             "command": "cd build && cmake .. && make"
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
         }
     ]
 }
