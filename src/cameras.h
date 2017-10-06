@@ -25,8 +25,8 @@ Revision 3 - Jernej Barbic and Yili Zhao (USC), Feb, 2012
 #include<string>
 #include<sstream>
 #include"skeleton.h"
-
-
+#include<vector>
+#include<opencv2/opencv.hpp>
 
 struct PinholeCamera{
   int poseId;
@@ -49,9 +49,13 @@ public:
   void setPoseId(int pId_){poseId = pId_;}  
   void Reset();
 
+
 private:  
   std::vector<PinholeCamera> allCams;  
   int poseId;
+  std::vector<cv::Scalar> m_BoneColor;
+  
+
 };
 
 #endif

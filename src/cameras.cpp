@@ -2,14 +2,20 @@
 #include <FL/gl.h>
 #include <FL/glut.H>
 #include"skeleton.h"
+#include<opencv2/opencv.hpp>
+#include<stdlib.h>
+
 
 
 Cameras::Cameras(){
     poseId = 0;
     allCams.clear();
+    m_BoneColor.clear();
 }
 Cameras::~Cameras(){
     allCams.clear();
+    m_BoneColor.clear();
+
 }
 void Cameras::Reset(){
     for(int i=0;i<allCams.size();i++){
@@ -124,11 +130,50 @@ void Cameras::drawCam(int camId){
     glEnable(GL_LIGHTING);
     glPopMatrix();
 }
-void Cameras::RenderSkeletonToCam(Skeleton *m_p,int camId){
+void Cameras::RenderSkeletonToCam(Skeleton *m_p,int camId){            
     if(!allCams.size())
         return;    
     //perspective 
-    
-    
+    PinholeCamera  m_pCam = allCams[camId];
 
+    //1 camera Pose
+    cv::Mat img2show((int)m_pCam.h,(int)m_pCam.w,CV_8UC(3),cv::Scalar::all(55));
+    cv::Mat img2showFlip;
+    int numJoints = m_p->numBonesInSkel(m_p->getRoot());
+    if(!m_BoneColor.size()){
+        for(int i=0;i<numJoints;i++){
+            cv::Scalar m_color = cv::Scalar(rand()%255,rand()%255,rand()%255);
+            m_BoneColor.push_back(m_color);            
+        }                
+    }
+    double * imageX = new double[numJoints];
+    double * imageY = new double[numJoints];
+
+    Eigen::Matrix4d cam_pos = m_pCam.pos[poseId];    
+
+    //2 Joint  Pose
+    for(int i=0;i<numJoints;i++){
+        Eigen::Vector4d jPos;
+        jPos(3)=1;
+        jPos.head(3) = m_p->getBone(i)->jointPos;
+        Eigen::Vector3d jPosInFrame = (cam_pos.inverse()*jPos).head(3);
+        jPosInFrame = m_pCam.K*jPosInFrame;
+        imageX[i] = jPosInFrame(0)/jPosInFrame(2);
+        imageY[i] = jPosInFrame(1)/jPosInFrame(2);        
+    }
+
+    for(int i=1;i<numJoints;i++){
+        Bone *m_bone = m_p->getBone(i);
+        int iref = m_bone->father->idx;
+        cv::line(img2show,cv::Point(imageX[i],imageY[i]),cv::Point(imageX[iref],imageY[iref]),m_BoneColor[i],5);
+    }
+
+    std::cout<<"Opencv image show called"<<std::endl;
+    cv::flip(img2show,img2showFlip,0);
+    cv::imshow("images",img2showFlip);
+    cv::waitKey(1);
+
+
+    delete [] imageX;
+    delete [] imageY;
 }

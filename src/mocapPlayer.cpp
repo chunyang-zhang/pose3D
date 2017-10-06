@@ -239,6 +239,7 @@ void Redisplay()
     glDisable(GL_FOG);
     displayer.Render(DisplaySkeleton::BONES_AND_LOCAL_FRAMES);
     camDisplayer.drawCam(0);
+    camDisplayer.RenderSkeletonToCam(displayer.GetSkeleton(0),0);
   }
 
   glPopMatrix(); // restore current transformation matrix

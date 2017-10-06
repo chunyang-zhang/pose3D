@@ -612,7 +612,7 @@ void Skeleton::calGlobalBonePos(Bone *m_bone, Eigen::Matrix3d f2w)
 
   Eigen::Vector3d fatherPos; 
   if (m_bone->idx == 0){
-    fatherPos = Eigen::Map<Eigen::Vector3d>(m_RootPos)+Eigen::Vector3d(2,0,0); 
+    fatherPos = Eigen::Map<Eigen::Vector3d>(m_RootPos); 
   }
   else{
     fatherPos = (m_bone->father)->jointPos;

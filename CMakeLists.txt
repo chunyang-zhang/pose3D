@@ -17,6 +17,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 find_package(OpenGL REQUIRED)
 find_package(FLTK REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
 
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
@@ -40,3 +41,5 @@ add_executable(pose3d_main ${PROJECT_SOURCE_DIR}/src/mocapPlayer.cpp)
 target_link_libraries(pose3d_main pose3d)
 target_link_libraries(pose3d_main ${FLTK_LIBRARIES})
 target_link_libraries(pose3d_main ${OPENGL_LIBRARIES})
+target_link_libraries(pose3d_main ${OpenCV_LIBS})
+
