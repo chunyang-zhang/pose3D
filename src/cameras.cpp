@@ -98,12 +98,11 @@ void Cameras::drawCam(int camId){
     m_fy = mCam_cur.K(1,1);
     m_cx = mCam_cur.K(0,2);
     m_cy = mCam_cur.K(1,2);
-    
-
-    glColor3f(1,0,0);
+        
     glLineWidth(2.0);
     glBegin(GL_LINES);
 
+    glColor3f(0.2,0.2,0.2);
     glVertex3f(0, 0, 0);
     glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
     glVertex3f(0, 0, 0);
@@ -113,15 +112,24 @@ void Cameras::drawCam(int camId){
     glVertex3f(0, 0, 0);
     glVertex3f(m_sz * (m_w - 1 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
 
+
+    glColor3f(0.2,0.2,0.2);
     glVertex3f(m_sz * (m_w - 1 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
     glVertex3f(m_sz * (m_w - 1 - m_cx) / m_fx, m_sz * (m_h - 1 - m_cy) / m_fy, m_sz);
 
+    glColor3f(0.2,0.2,0.2);
     glVertex3f(m_sz * (m_w - 1 - m_cx) / m_fx, m_sz * (m_h - 1 - m_cy) / m_fy, m_sz);
     glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (m_h - 1 - m_cy) / m_fy, m_sz);
 
+    glColor3f(0.2,0.2,1.0);    
+    glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
+    glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz+m_sz);
+
+    glColor3f(0.2,1.0,0.2);
     glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (m_h - 1 - m_cy) / m_fy, m_sz);
     glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
 
+    glColor3f(1.2,0.2,0.2);
     glVertex3f(m_sz * (0 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
     glVertex3f(m_sz * (m_w - 1 - m_cx) / m_fx, m_sz * (0 - m_cy) / m_fy, m_sz);
     glEnd();
@@ -166,10 +174,8 @@ void Cameras::RenderSkeletonToCam(Skeleton *m_p,int camId){
         Bone *m_bone = m_p->getBone(i);
         int iref = m_bone->father->idx;
         cv::line(img2show,cv::Point(imageX[i],imageY[i]),cv::Point(imageX[iref],imageY[iref]),m_BoneColor[i],5);
-    }
-
-    std::cout<<"Opencv image show called"<<std::endl;
-    cv::flip(img2show,img2showFlip,0);
+    }    
+    cv::flip(img2show,img2showFlip,-1);
     cv::imshow("images",img2showFlip);
     cv::waitKey(1);
 
